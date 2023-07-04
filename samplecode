@@ -1,0 +1,158 @@
+<title>Point Line Chart</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+    <head>
+        <title>Point Line Chart</title>
+        <style>
+            canvas {
+                border: 1px solid #000;
+            }
+        </style>
+    </head>
+        <body>
+            <canvas id="chartCanvas" width="500" height="400"></canvas>
+            <script>
+                // Sample data for the chart
+                const data = [
+                    { x: 0, y: 20 },
+                    { x: 1, y: 40 },
+                    { x: 2, y: 10 },
+                    { x: 3, y: 50 },
+                    { x: 4, y: 30 },
+                    { x: 5, y: 45 },
+                ];
+
+                // Function to draw the chart
+                function drawChart(data) {
+                    const canvas = document.getElementById('chartCanvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Adjust canvas size
+                    canvas.width = 680;
+                    canvas.height = 400;
+
+                    // Clear the canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Set up chart properties
+                    const margin = { top: 40, right: 20, bottom: 80, left: 80 };
+                    const chartWidth = canvas.width - margin.left - margin.right;
+                    const chartHeight = canvas.height - margin.top - margin.bottom;
+
+                    // Find minimum and maximum values
+                    const minX = 0;
+                    const maxX = 30;
+                    const minY = 0;
+                    const maxY = 100;
+
+                    // Calculate scaling factors
+                    const xScale = chartWidth / (maxX - minX);
+                    const yScale = chartHeight / (maxY - minY);
+
+                    // Draw x and y axis lines
+                    ctx.beginPath();
+                    ctx.moveTo(margin.left, margin.top);
+                    ctx.lineTo(margin.left, canvas.height - margin.bottom);
+                    ctx.lineTo(canvas.width - margin.right, canvas.height - margin.bottom);
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Draw x axis tick marks and labels
+                    const xTickInterval = 1;
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#000';
+                    ctx.textAlign = 'center';
+                    for (let i = minX; i <= maxX; i += xTickInterval) {
+                        const x = margin.left + (i - minX) * xScale;
+                        const y = canvas.height - margin.bottom + 20;
+
+                        ctx.beginPath();
+                        ctx.moveTo(x, canvas.height - margin.bottom);
+                        ctx.lineTo(x, canvas.height - margin.bottom + 10);
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        ctx.fillText(i, x, y);
+                    }
+
+                    // Draw x axis label
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('TMS pulse number', canvas.width / 2, canvas.height - 15);
+
+                    // Draw y axis tick marks and labels
+                    const yTickInterval = 10;
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#000';
+                    ctx.textAlign = 'right';
+                    for (let i = minY; i <= maxY; i += yTickInterval) {
+                        const x = margin.left - 10;
+                        const y = canvas.height - margin.bottom - (i - minY) * yScale;
+
+                        ctx.beginPath();
+                        ctx.moveTo(margin.left, y);
+                        ctx.lineTo(margin.left - 10, y);
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        ctx.save();
+                        ctx.translate(x, y);
+                        ctx.rotate(-Math.PI / 2);
+                        ctx.fillText(i, 0, 0);
+                        ctx.restore();
+                    }
+
+                    // Draw y axis label
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.save();
+                    ctx.translate(35, canvas.height / 2);
+                    ctx.rotate(-Math.PI / 2);
+                    ctx.fillText('TMS amplitude (% MSO)', 0, 0);
+                    ctx.restore();
+
+                    // Draw data points and lines
+                    data.forEach(point => {
+                        const x = margin.left + (point.x - minX) * xScale;
+                        const y = canvas.height - margin.bottom - (point.y - minY) * yScale;
+
+                        ctx.beginPath();
+                        ctx.arc(x, y, 6, 0, Math.PI * 2);
+                        ctx.fillStyle = point.x % 2 === 0 ? '#00f' : '#f00';
+                        ctx.fill();
+                    });
+
+                    // Draw lines connecting the points
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                    data.forEach((point, index) => {
+                        const x = margin.left + (point.x - minX) * xScale;
+                        const y = canvas.height - margin.bottom - (point.y - minY) * yScale;
+
+                        if (index === 0) {
+                        ctx.moveTo(x, y);
+                        } else {
+                        ctx.lineTo(x, y);
+                        }
+                    });
+
+                    ctx.stroke();
+                    }
+
+
+
+
+
+
+
+                // Call the drawChart function with the sample data
+                    drawChart(data);
+            </script>
+        </body>
