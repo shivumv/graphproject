@@ -1,158 +1,1297 @@
-<title>Point Line Chart</title>
-    <style>
-        canvas {
-            border: 1px solid #000;
-        }
-    </style>
-    <head>
-        <title>Point Line Chart</title>
-        <style>
-            canvas {
-                border: 1px solid #000;
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>SAMT: Stochastic Approximator of Motor Threshold</title>
+		<style type="text/css">
+
+			/* W3.CSS 4.15 December 2020 by Jan Egil and Borge Refsnes */
+			html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}
+			/* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */
+			html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}
+			article,aside,details,figcaption,figure,footer,header,main,menu,nav,section{display:block}summary{display:list-item}
+			audio,canvas,progress,video{display:inline-block}progress{vertical-align:baseline}
+			audio:not([controls]){display:none;height:0}[hidden],template{display:none}
+			a{background-color:transparent}a:active,a:hover{outline-width:0}
+			abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}
+			b,strong{font-weight:bolder}dfn{font-style:italic}mark{background:#ff0;color:#000}
+			small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+			sub{bottom:-0.25em}sup{top:-0.5em}figure{margin:1em 40px}img{border-style:none}
+			code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}hr{box-sizing:content-box;height:0;overflow:visible}
+			button,input,select,textarea,optgroup{font:inherit;margin:0}optgroup{font-weight:bold}
+			button,input{overflow:visible}button,select{text-transform:none}
+			button,[type=button],[type=reset],[type=submit]{-webkit-appearance:button}
+			button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{border-style:none;padding:0}
+			button:-moz-focusring,[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring{outline:1px dotted ButtonText}
+			fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}
+			legend{color:inherit;display:table;max-width:100%;padding:0;white-space:normal}textarea{overflow:auto}
+			[type=checkbox],[type=radio]{padding:0}
+			[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}
+			[type=search]{-webkit-appearance:textfield;outline-offset:-2px}
+			[type=search]::-webkit-search-decoration{-webkit-appearance:none}
+			::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}
+			/* End extract */
+			html,body{font-family:Verdana,sans-serif;font-size:15px;line-height:1.5}html{overflow-x:hidden}
+			h1{font-size:36px}h2{font-size:30px}h3{font-size:24px}h4{font-size:20px}h5{font-size:18px}h6{font-size:16px}
+			.w3-serif{font-family:serif}.w3-sans-serif{font-family:sans-serif}.w3-cursive{font-family:cursive}.w3-monospace{font-family:monospace}
+			h1,h2,h3,h4,h5,h6{font-family:"Segoe UI",Arial,sans-serif;font-weight:400;margin:10px 0}.w3-wide{letter-spacing:4px}
+			hr{border:0;border-top:1px solid #eee;margin:20px 0}
+			.w3-image{max-width:100%;height:auto}img{vertical-align:middle}a{color:inherit}
+			.w3-table,.w3-table-all{border-collapse:collapse;border-spacing:0;width:100%;display:table}.w3-table-all{border:1px solid #ccc}
+			.w3-bordered tr,.w3-table-all tr{border-bottom:1px solid #ddd}.w3-striped tbody tr:nth-child(even){background-color:#f1f1f1}
+			.w3-table-all tr:nth-child(odd){background-color:#fff}.w3-table-all tr:nth-child(even){background-color:#f1f1f1}
+			.w3-hoverable tbody tr:hover,.w3-ul.w3-hoverable li:hover{background-color:#ccc}.w3-centered tr th,.w3-centered tr td{text-align:center}
+			.w3-table td,.w3-table th,.w3-table-all td,.w3-table-all th{padding:8px 8px;display:table-cell;text-align:left;vertical-align:top}
+			.w3-table th:first-child,.w3-table td:first-child,.w3-table-all th:first-child,.w3-table-all td:first-child{padding-left:16px}
+			.w3-btn,.w3-button{border:none;display:inline-block;padding:8px 16px;vertical-align:middle;overflow:hidden;text-decoration:none;color:inherit;background-color:inherit;text-align:center;cursor:pointer;white-space:nowrap}
+			.w3-btn:hover{box-shadow:0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19)}
+			.w3-btn,.w3-button{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}   
+			.w3-disabled,.w3-btn:disabled,.w3-button:disabled{cursor:not-allowed;opacity:0.3}.w3-disabled *,:disabled *{pointer-events:none}
+			.w3-btn.w3-disabled:hover,.w3-btn:disabled:hover{box-shadow:none}
+			.w3-badge,.w3-tag{background-color:#000;color:#fff;display:inline-block;padding-left:8px;padding-right:8px;text-align:center}.w3-badge{border-radius:50%}
+			.w3-ul{list-style-type:none;padding:0;margin:0}.w3-ul li{padding:8px 16px;border-bottom:1px solid #ddd}.w3-ul li:last-child{border-bottom:none}
+			.w3-tooltip,.w3-display-container{position:relative}.w3-tooltip .w3-text{display:none}.w3-tooltip:hover .w3-text{display:inline-block}
+			.w3-ripple:active{opacity:0.5}.w3-ripple{transition:opacity 0s}
+			.w3-input{padding:8px;display:block;border:none;border-bottom:1px solid #ccc;width:100%}
+			.w3-select{padding:9px 0;width:100%;border:none;border-bottom:1px solid #ccc}
+			.w3-dropdown-click,.w3-dropdown-hover{position:relative;display:inline-block;cursor:pointer}
+			.w3-dropdown-hover:hover .w3-dropdown-content{display:block}
+			.w3-dropdown-hover:first-child,.w3-dropdown-click:hover{background-color:#ccc;color:#000}
+			.w3-dropdown-hover:hover > .w3-button:first-child,.w3-dropdown-click:hover > .w3-button:first-child{background-color:#ccc;color:#000}
+			.w3-dropdown-content{cursor:auto;color:#000;background-color:#fff;display:none;position:absolute;min-width:160px;margin:0;padding:0;z-index:1}
+			.w3-check,.w3-radio{width:24px;height:24px;position:relative;top:6px}
+			.w3-sidebar{height:100%;width:200px;background-color:#fff;position:fixed!important;z-index:1;overflow:auto}
+			.w3-bar-block .w3-dropdown-hover,.w3-bar-block .w3-dropdown-click{width:100%}
+			.w3-bar-block .w3-dropdown-hover .w3-dropdown-content,.w3-bar-block .w3-dropdown-click .w3-dropdown-content{min-width:100%}
+			.w3-bar-block .w3-dropdown-hover .w3-button,.w3-bar-block .w3-dropdown-click .w3-button{width:100%;text-align:left;padding:8px 16px}
+			.w3-main,#main{transition:margin-left .4s}
+			.w3-modal{z-index:3;display:none;padding-top:100px;position:fixed;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4)}
+			.w3-modal-content{margin:auto;background-color:#fff;position:relative;padding:0;outline:0;width:600px}
+			.w3-bar{width:100%;overflow:hidden}.w3-center .w3-bar{display:inline-block;width:auto}
+			.w3-bar .w3-bar-item{padding:8px 16px;float:left;width:auto;border:none;display:block;outline:0}
+			.w3-bar .w3-dropdown-hover,.w3-bar .w3-dropdown-click{position:static;float:left}
+			.w3-bar .w3-button{white-space:normal}
+			.w3-bar-block .w3-bar-item{width:100%;display:block;padding:8px 16px;text-align:left;border:none;white-space:normal;float:none;outline:0}
+			.w3-bar-block.w3-center .w3-bar-item{text-align:center}.w3-block{display:block;width:100%}
+			.w3-responsive{display:block;overflow-x:auto}
+			.w3-container:after,.w3-container:before,.w3-panel:after,.w3-panel:before,.w3-row:after,.w3-row:before,.w3-row-padding:after,.w3-row-padding:before,
+			.w3-cell-row:before,.w3-cell-row:after,.w3-clear:after,.w3-clear:before,.w3-bar:before,.w3-bar:after{content:"";display:table;clear:both}
+			.w3-col,.w3-half,.w3-third,.w3-twothird,.w3-threequarter,.w3-quarter{float:left;width:100%}
+			.w3-col.s1{width:8.33333%}.w3-col.s2{width:16.66666%}.w3-col.s3{width:24.99999%}.w3-col.s4{width:33.33333%}
+			.w3-col.s5{width:41.66666%}.w3-col.s6{width:49.99999%}.w3-col.s7{width:58.33333%}.w3-col.s8{width:66.66666%}
+			.w3-col.s9{width:74.99999%}.w3-col.s10{width:83.33333%}.w3-col.s11{width:91.66666%}.w3-col.s12{width:99.99999%}
+			@media (min-width:601px){.w3-col.m1{width:8.33333%}.w3-col.m2{width:16.66666%}.w3-col.m3,.w3-quarter{width:24.99999%}.w3-col.m4,.w3-third{width:33.33333%}
+			.w3-col.m5{width:41.66666%}.w3-col.m6,.w3-half{width:49.99999%}.w3-col.m7{width:58.33333%}.w3-col.m8,.w3-twothird{width:66.66666%}
+			.w3-col.m9,.w3-threequarter{width:74.99999%}.w3-col.m10{width:83.33333%}.w3-col.m11{width:91.66666%}.w3-col.m12{width:99.99999%}}
+			@media (min-width:993px){.w3-col.l1{width:8.33333%}.w3-col.l2{width:16.66666%}.w3-col.l3{width:24.99999%}.w3-col.l4{width:33.33333%}
+			.w3-col.l5{width:41.66666%}.w3-col.l6{width:49.99999%}.w3-col.l7{width:58.33333%}.w3-col.l8{width:66.66666%}
+			.w3-col.l9{width:74.99999%}.w3-col.l10{width:83.33333%}.w3-col.l11{width:91.66666%}.w3-col.l12{width:99.99999%}}
+			.w3-rest{overflow:hidden}.w3-stretch{margin-left:-16px;margin-right:-16px}
+			.w3-content,.w3-auto{margin-left:auto;margin-right:auto}.w3-content{max-width:980px}.w3-auto{max-width:1140px}
+			.w3-cell-row{display:table;width:100%}.w3-cell{display:table-cell}
+			.w3-cell-top{vertical-align:top}.w3-cell-middle{vertical-align:middle}.w3-cell-bottom{vertical-align:bottom}
+			.w3-hide{display:none!important}.w3-show-block,.w3-show{display:block!important}.w3-show-inline-block{display:inline-block!important}
+			@media (max-width:1205px){.w3-auto{max-width:95%}}
+			@media (max-width:600px){.w3-modal-content{margin:0 10px;width:auto!important}.w3-modal{padding-top:30px}
+			.w3-dropdown-hover.w3-mobile .w3-dropdown-content,.w3-dropdown-click.w3-mobile .w3-dropdown-content{position:relative}	
+			.w3-hide-small{display:none!important}.w3-mobile{display:block;width:100%!important}.w3-bar-item.w3-mobile,.w3-dropdown-hover.w3-mobile,.w3-dropdown-click.w3-mobile{text-align:center}
+			.w3-dropdown-hover.w3-mobile,.w3-dropdown-hover.w3-mobile .w3-btn,.w3-dropdown-hover.w3-mobile .w3-button,.w3-dropdown-click.w3-mobile,.w3-dropdown-click.w3-mobile .w3-btn,.w3-dropdown-click.w3-mobile .w3-button{width:100%}}
+			@media (max-width:768px){.w3-modal-content{width:500px}.w3-modal{padding-top:50px}}
+			@media (min-width:993px){.w3-modal-content{width:900px}.w3-hide-large{display:none!important}.w3-sidebar.w3-collapse{display:block!important}}
+			@media (max-width:992px) and (min-width:601px){.w3-hide-medium{display:none!important}}
+			@media (max-width:992px){.w3-sidebar.w3-collapse{display:none}.w3-main{margin-left:0!important;margin-right:0!important}.w3-auto{max-width:100%}}
+			.w3-top,.w3-bottom{position:fixed;width:100%;z-index:1}.w3-top{top:0}.w3-bottom{bottom:0}
+			.w3-overlay{position:fixed;display:none;width:100%;height:100%;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.5);z-index:2}
+			.w3-display-topleft{position:absolute;left:0;top:0}.w3-display-topright{position:absolute;right:0;top:0}
+			.w3-display-bottomleft{position:absolute;left:0;bottom:0}.w3-display-bottomright{position:absolute;right:0;bottom:0}
+			.w3-display-middle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%)}
+			.w3-display-left{position:absolute;top:50%;left:0%;transform:translate(0%,-50%);-ms-transform:translate(-0%,-50%)}
+			.w3-display-right{position:absolute;top:50%;right:0%;transform:translate(0%,-50%);-ms-transform:translate(0%,-50%)}
+			.w3-display-topmiddle{position:absolute;left:50%;top:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
+			.w3-display-bottommiddle{position:absolute;left:50%;bottom:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
+			.w3-display-container:hover .w3-display-hover{display:block}.w3-display-container:hover span.w3-display-hover{display:inline-block}.w3-display-hover{display:none}
+			.w3-display-position{position:absolute}
+			.w3-circle{border-radius:50%}
+			.w3-round-small{border-radius:2px}.w3-round,.w3-round-medium{border-radius:4px}.w3-round-large{border-radius:8px}.w3-round-xlarge{border-radius:16px}.w3-round-xxlarge{border-radius:32px}
+			.w3-row-padding,.w3-row-padding>.w3-half,.w3-row-padding>.w3-third,.w3-row-padding>.w3-twothird,.w3-row-padding>.w3-threequarter,.w3-row-padding>.w3-quarter,.w3-row-padding>.w3-col{padding:0 8px}
+			.w3-container,.w3-panel{padding:0.01em 16px}.w3-panel{margin-top:16px;margin-bottom:16px}
+			.w3-code,.w3-codespan{font-family:Consolas,"courier new";font-size:16px}
+			.w3-code{width:auto;background-color:#fff;padding:8px 12px;border-left:4px solid #4CAF50;word-wrap:break-word}
+			.w3-codespan{color:crimson;background-color:#f1f1f1;padding-left:4px;padding-right:4px;font-size:110%}
+			.w3-card,.w3-card-2{box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)}
+			.w3-card-4,.w3-hover-shadow:hover{box-shadow:0 4px 10px 0 rgba(0,0,0,0.2),0 4px 20px 0 rgba(0,0,0,0.19)}
+			.w3-spin{animation:w3-spin 2s infinite linear}@keyframes w3-spin{0%{transform:rotate(0deg)}100%{transform:rotate(359deg)}}
+			.w3-animate-fading{animation:fading 10s infinite}@keyframes fading{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+			.w3-animate-opacity{animation:opac 0.8s}@keyframes opac{from{opacity:0} to{opacity:1}}
+			.w3-animate-top{position:relative;animation:animatetop 0.4s}@keyframes animatetop{from{top:-300px;opacity:0} to{top:0;opacity:1}}
+			.w3-animate-left{position:relative;animation:animateleft 0.4s}@keyframes animateleft{from{left:-300px;opacity:0} to{left:0;opacity:1}}
+			.w3-animate-right{position:relative;animation:animateright 0.4s}@keyframes animateright{from{right:-300px;opacity:0} to{right:0;opacity:1}}
+			.w3-animate-bottom{position:relative;animation:animatebottom 0.4s}@keyframes animatebottom{from{bottom:-300px;opacity:0} to{bottom:0;opacity:1}}
+			.w3-animate-zoom {animation:animatezoom 0.6s}@keyframes animatezoom{from{transform:scale(0)} to{transform:scale(1)}}
+			.w3-animate-input{transition:width 0.4s ease-in-out}.w3-animate-input:focus{width:100%!important}
+			.w3-opacity,.w3-hover-opacity:hover{opacity:0.60}.w3-opacity-off,.w3-hover-opacity-off:hover{opacity:1}
+			.w3-opacity-max{opacity:0.25}.w3-opacity-min{opacity:0.75}
+			.w3-greyscale-max,.w3-grayscale-max,.w3-hover-greyscale:hover,.w3-hover-grayscale:hover{filter:grayscale(100%)}
+			.w3-greyscale,.w3-grayscale{filter:grayscale(75%)}.w3-greyscale-min,.w3-grayscale-min{filter:grayscale(50%)}
+			.w3-sepia{filter:sepia(75%)}.w3-sepia-max,.w3-hover-sepia:hover{filter:sepia(100%)}.w3-sepia-min{filter:sepia(50%)}
+			.w3-tiny{font-size:10px!important}.w3-small{font-size:12px!important}.w3-medium{font-size:15px!important}.w3-large{font-size:18px!important}
+			.w3-xlarge{font-size:24px!important}.w3-xxlarge{font-size:36px!important}.w3-xxxlarge{font-size:48px!important}.w3-jumbo{font-size:64px!important}
+			.w3-left-align{text-align:left!important}.w3-right-align{text-align:right!important}.w3-justify{text-align:justify!important}.w3-center{text-align:center!important}
+			.w3-border-0{border:0!important}.w3-border{border:1px solid #ccc!important}
+			.w3-border-top{border-top:1px solid #ccc!important}.w3-border-bottom{border-bottom:1px solid #ccc!important}
+			.w3-border-left{border-left:1px solid #ccc!important}.w3-border-right{border-right:1px solid #ccc!important}
+			.w3-topbar{border-top:6px solid #ccc!important}.w3-bottombar{border-bottom:6px solid #ccc!important}
+			.w3-leftbar{border-left:6px solid #ccc!important}.w3-rightbar{border-right:6px solid #ccc!important}
+			.w3-section,.w3-code{margin-top:16px!important;margin-bottom:16px!important}
+			.w3-margin{margin:16px!important}.w3-margin-top{margin-top:16px!important}.w3-margin-bottom{margin-bottom:16px!important}
+			.w3-margin-left{margin-left:16px!important}.w3-margin-right{margin-right:16px!important}
+			.w3-padding-small{padding:4px 8px!important}.w3-padding{padding:8px 16px!important}.w3-padding-large{padding:12px 24px!important}
+			.w3-padding-16{padding-top:16px!important;padding-bottom:16px!important}.w3-padding-24{padding-top:24px!important;padding-bottom:24px!important}
+			.w3-padding-32{padding-top:32px!important;padding-bottom:32px!important}.w3-padding-48{padding-top:48px!important;padding-bottom:48px!important}
+			.w3-padding-64{padding-top:64px!important;padding-bottom:64px!important}
+			.w3-padding-top-64{padding-top:64px!important}.w3-padding-top-48{padding-top:48px!important}
+			.w3-padding-top-32{padding-top:32px!important}.w3-padding-top-24{padding-top:24px!important}
+			.w3-left{float:left!important}.w3-right{float:right!important}
+			.w3-button:hover{color:#000!important;background-color:#ccc!important}
+			.w3-transparent,.w3-hover-none:hover{background-color:transparent!important}
+			.w3-hover-none:hover{box-shadow:none!important}
+			/* Colors */
+			.w3-amber,.w3-hover-amber:hover{color:#000!important;background-color:#ffc107!important}
+			.w3-aqua,.w3-hover-aqua:hover{color:#000!important;background-color:#00ffff!important}
+			.w3-blue,.w3-hover-blue:hover{color:#fff!important;background-color:#2196F3!important}
+			.w3-light-blue,.w3-hover-light-blue:hover{color:#000!important;background-color:#87CEEB!important}
+			.w3-brown,.w3-hover-brown:hover{color:#fff!important;background-color:#795548!important}
+			.w3-cyan,.w3-hover-cyan:hover{color:#000!important;background-color:#00bcd4!important}
+			.w3-blue-grey,.w3-hover-blue-grey:hover,.w3-blue-gray,.w3-hover-blue-gray:hover{color:#fff!important;background-color:#607d8b!important}
+			.w3-green,.w3-hover-green:hover{color:#fff!important;background-color:#4CAF50!important}
+			.w3-light-green,.w3-hover-light-green:hover{color:#000!important;background-color:#8bc34a!important}
+			.w3-indigo,.w3-hover-indigo:hover{color:#fff!important;background-color:#3f51b5!important}
+			.w3-khaki,.w3-hover-khaki:hover{color:#000!important;background-color:#f0e68c!important}
+			.w3-lime,.w3-hover-lime:hover{color:#000!important;background-color:#cddc39!important}
+			.w3-orange,.w3-hover-orange:hover{color:#000!important;background-color:#ff9800!important}
+			.w3-deep-orange,.w3-hover-deep-orange:hover{color:#fff!important;background-color:#ff5722!important}
+			.w3-pink,.w3-hover-pink:hover{color:#fff!important;background-color:#e91e63!important}
+			.w3-purple,.w3-hover-purple:hover{color:#fff!important;background-color:#9c27b0!important}
+			.w3-deep-purple,.w3-hover-deep-purple:hover{color:#fff!important;background-color:#673ab7!important}
+			.w3-red,.w3-hover-red:hover{color:#fff!important;background-color:#f44336!important}
+			.w3-sand,.w3-hover-sand:hover{color:#000!important;background-color:#fdf5e6!important}
+			.w3-teal,.w3-hover-teal:hover{color:#fff!important;background-color:#009688!important}
+			.w3-yellow,.w3-hover-yellow:hover{color:#000!important;background-color:#ffeb3b!important}
+			.w3-white,.w3-hover-white:hover{color:#000!important;background-color:#fff!important}
+			.w3-black,.w3-hover-black:hover{color:#fff!important;background-color:#000!important}
+			.w3-grey,.w3-hover-grey:hover,.w3-gray,.w3-hover-gray:hover{color:#000!important;background-color:#9e9e9e!important}
+			.w3-light-grey,.w3-hover-light-grey:hover,.w3-light-gray,.w3-hover-light-gray:hover{color:#000!important;background-color:#f1f1f1!important}
+			.w3-dark-grey,.w3-hover-dark-grey:hover,.w3-dark-gray,.w3-hover-dark-gray:hover{color:#fff!important;background-color:#616161!important}
+			.w3-pale-red,.w3-hover-pale-red:hover{color:#000!important;background-color:#ffdddd!important}
+			.w3-pale-green,.w3-hover-pale-green:hover{color:#000!important;background-color:#ddffdd!important}
+			.w3-pale-yellow,.w3-hover-pale-yellow:hover{color:#000!important;background-color:#ffffcc!important}
+			.w3-pale-blue,.w3-hover-pale-blue:hover{color:#000!important;background-color:#ddffff!important}
+			.w3-text-amber,.w3-hover-text-amber:hover{color:#ffc107!important}
+			.w3-text-aqua,.w3-hover-text-aqua:hover{color:#00ffff!important}
+			.w3-text-blue,.w3-hover-text-blue:hover{color:#2196F3!important}
+			.w3-text-light-blue,.w3-hover-text-light-blue:hover{color:#87CEEB!important}
+			.w3-text-brown,.w3-hover-text-brown:hover{color:#795548!important}
+			.w3-text-cyan,.w3-hover-text-cyan:hover{color:#00bcd4!important}
+			.w3-text-blue-grey,.w3-hover-text-blue-grey:hover,.w3-text-blue-gray,.w3-hover-text-blue-gray:hover{color:#607d8b!important}
+			.w3-text-green,.w3-hover-text-green:hover{color:#4CAF50!important}
+			.w3-text-light-green,.w3-hover-text-light-green:hover{color:#8bc34a!important}
+			.w3-text-indigo,.w3-hover-text-indigo:hover{color:#3f51b5!important}
+			.w3-text-khaki,.w3-hover-text-khaki:hover{color:#b4aa50!important}
+			.w3-text-lime,.w3-hover-text-lime:hover{color:#cddc39!important}
+			.w3-text-orange,.w3-hover-text-orange:hover{color:#ff9800!important}
+			.w3-text-deep-orange,.w3-hover-text-deep-orange:hover{color:#ff5722!important}
+			.w3-text-pink,.w3-hover-text-pink:hover{color:#e91e63!important}
+			.w3-text-purple,.w3-hover-text-purple:hover{color:#9c27b0!important}
+			.w3-text-deep-purple,.w3-hover-text-deep-purple:hover{color:#673ab7!important}
+			.w3-text-red,.w3-hover-text-red:hover{color:#f44336!important}
+			.w3-text-sand,.w3-hover-text-sand:hover{color:#fdf5e6!important}
+			.w3-text-teal,.w3-hover-text-teal:hover{color:#009688!important}
+			.w3-text-yellow,.w3-hover-text-yellow:hover{color:#d2be0e!important}
+			.w3-text-white,.w3-hover-text-white:hover{color:#fff!important}
+			.w3-text-black,.w3-hover-text-black:hover{color:#000!important}
+			.w3-text-grey,.w3-hover-text-grey:hover,.w3-text-gray,.w3-hover-text-gray:hover{color:#757575!important}
+			.w3-text-light-grey,.w3-hover-text-light-grey:hover,.w3-text-light-gray,.w3-hover-text-light-gray:hover{color:#f1f1f1!important}
+			.w3-text-dark-grey,.w3-hover-text-dark-grey:hover,.w3-text-dark-gray,.w3-hover-text-dark-gray:hover{color:#3a3a3a!important}
+			.w3-border-amber,.w3-hover-border-amber:hover{border-color:#ffc107!important}
+			.w3-border-aqua,.w3-hover-border-aqua:hover{border-color:#00ffff!important}
+			.w3-border-blue,.w3-hover-border-blue:hover{border-color:#2196F3!important}
+			.w3-border-light-blue,.w3-hover-border-light-blue:hover{border-color:#87CEEB!important}
+			.w3-border-brown,.w3-hover-border-brown:hover{border-color:#795548!important}
+			.w3-border-cyan,.w3-hover-border-cyan:hover{border-color:#00bcd4!important}
+			.w3-border-blue-grey,.w3-hover-border-blue-grey:hover,.w3-border-blue-gray,.w3-hover-border-blue-gray:hover{border-color:#607d8b!important}
+			.w3-border-green,.w3-hover-border-green:hover{border-color:#4CAF50!important}
+			.w3-border-light-green,.w3-hover-border-light-green:hover{border-color:#8bc34a!important}
+			.w3-border-indigo,.w3-hover-border-indigo:hover{border-color:#3f51b5!important}
+			.w3-border-khaki,.w3-hover-border-khaki:hover{border-color:#f0e68c!important}
+			.w3-border-lime,.w3-hover-border-lime:hover{border-color:#cddc39!important}
+			.w3-border-orange,.w3-hover-border-orange:hover{border-color:#ff9800!important}
+			.w3-border-deep-orange,.w3-hover-border-deep-orange:hover{border-color:#ff5722!important}
+			.w3-border-pink,.w3-hover-border-pink:hover{border-color:#e91e63!important}
+			.w3-border-purple,.w3-hover-border-purple:hover{border-color:#9c27b0!important}
+			.w3-border-deep-purple,.w3-hover-border-deep-purple:hover{border-color:#673ab7!important}
+			.w3-border-red,.w3-hover-border-red:hover{border-color:#f44336!important}
+			.w3-border-sand,.w3-hover-border-sand:hover{border-color:#fdf5e6!important}
+			.w3-border-teal,.w3-hover-border-teal:hover{border-color:#009688!important}
+			.w3-border-yellow,.w3-hover-border-yellow:hover{border-color:#ffeb3b!important}
+			.w3-border-white,.w3-hover-border-white:hover{border-color:#fff!important}
+			.w3-border-black,.w3-hover-border-black:hover{border-color:#000!important}
+			.w3-border-grey,.w3-hover-border-grey:hover,.w3-border-gray,.w3-hover-border-gray:hover{border-color:#9e9e9e!important}
+			.w3-border-light-grey,.w3-hover-border-light-grey:hover,.w3-border-light-gray,.w3-hover-border-light-gray:hover{border-color:#f1f1f1!important}
+			.w3-border-dark-grey,.w3-hover-border-dark-grey:hover,.w3-border-dark-gray,.w3-hover-border-dark-gray:hover{border-color:#616161!important}
+			.w3-border-pale-red,.w3-hover-border-pale-red:hover{border-color:#ffe7e7!important}.w3-border-pale-green,.w3-hover-border-pale-green:hover{border-color:#e7ffe7!important}
+			.w3-border-pale-yellow,.w3-hover-border-pale-yellow:hover{border-color:#ffffcc!important}.w3-border-pale-blue,.w3-hover-border-pale-blue:hover{border-color:#e7ffff!important}
+
+			body {
+				max-width: 720px;
+				border: 1px solid black;
+				margin: auto;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+			#MT_pulseList {
+				width: 100%;
+				font-family: monospace;
+				font-size: min(3vw,15px);
+			}
+		</style>
+		<script type="text/javascript">
+			/** An example implementation of a TMS motor threshold (MT) estimator class
+			 *
+			 * This class implements DCS1-H, DCS1-HA, ACS1-H and ACS1-HA from the manuscript.
+			 * In addition, the class implements a coarse estimate of the probable range of the MT estimation.
+			 * 
+			 * Author: Lari Koponen (initial version: DCS1-H), Boshuo Wang (additional versions and parameter choices, other UI updates and improvements)
+			 * Version: 1.4.3, 2023-06-08
+			 */
+			// Tab is 4 spaces
+			var MT_estimator;
+			
+			class SA_MT_estimator {							// Stochastic approximation (SA). AKA stochastic root-finding
+				constructor(MT_0, Vpp_th, digital, adaptive, a_0) {
+					if (MT_0=="") {							// Initial amplitude. Check for a missing value
+						throw 'Please specify an initial amplitude, a number between 0 and 100.'
+					}
+					MT_0=Number(MT_0);						// Convert to a 'Number' and check for a value in the desired range
+					
+					if (!(MT_0>0 && MT_0<=100)) {			// Important to check for the inverse of range to capture a NaN
+						throw 'Initial amplitude is not a positive number ≤100.';
+					}
+					if (!digital) {							// Only check definition of threshold EMG Vpp for analog methods
+						if (Vpp_th=="") {					// Check for a missing value
+							throw 'Please specify an EMG threshold.';
+						}
+						Vpp_th=Number(Vpp_th);				// Convert to a 'Number' and check for a value in the desired range
+						if (!(Vpp_th>0 && Vpp_th<=1000)){	// Important to check for the inverse of range to capture a NaN
+							throw 'EMG threshold is not a positive value within 1 mV.';
+						}
+					}
+					
+					if (a_0=="") {							// Initial amplitude. Check for a missing value
+						throw 'Please specify an initial step, a number between 1 and 20.'
+					}
+					a_0=Number(a_0);						// Convert to a 'Number' and check for a value in the desired range
+					if (!(a_0>=1 && a_0<=20)) {				// Important to check for the inverse of range to capture a NaN
+						throw 'Initial amplitude is not a number between 1 and 20.';
+					}
+					
+					// Initialize the class
+					this.Vpp_th=Vpp_th;						// μV
+					this.digital=digital;					// boolean
+					this.adaptive=adaptive;					// boolean
+					this.a_0=a_0;							// % MSO
+					
+					this.pulses=[];							// List of amplitude of TMS pulses, % MSO
+					this.Vpps=[];							// List of Vpp EMG responses, one for each pulse. Only relevant for analog method, μV
+					this.MEPs=[];							// List of binary responses, one for each pulse, boolean
+					this.countMEPs=[];						// Count of suprathreshold responses over the past 10 pulses
+					this.isCI=[];							// Boolean. True: estimation range is 95% CI. False: estimation range is not CI.
+					this.sign_changes=0;					// Number of sign changes for adaptive stepping. Not used for non-adaptive methods
+					this.steps=[];							// List of steps, a_i/i*deltaY
+					this.deltaYs=[];						// List of deltaY. Digital version: 1 & -1. Analog version: log10(Vpp/Vpp_th).
+					this.MT_nextPulse=Math.round(MT_0);		// Stimulator output for the next TMS pulse to be delivered.
+					this.MT_estimate=MT_0;					// Current estimate of the MT.
+					this.MT_estimate_CI=[0,100]; 			// Current "confidence interval" for the MT: range of probable values at step 20 or 10 steps after current step
+				}
+
+				// Number of TMS pulses
+				get index() {
+					return this.pulses.length;
+				}
+                
+				// Description of the quality of current estimation, based on relative frequency of positive/negative responses during last 10 pulses
+				get description() {
+					if (this.index<25) {
+						return "This estimate is likely inaccurate due to too few pulses ("+this.index+").";
+					} else {
+						// A good estimation sequence must have both MEPs and no MEPs towards the end, count last 10 pulses
+						var MEPs=this.countMEPs[this.index-1];
+						if (this.index<29) {
+							var tmp_str="Give a few more pulses or restart ";
+						} else {
+							var tmp_str="Restart ";
+						}
+						
+						if (this.digital){
+							if (MEPs<2) {
+								return "The last 10 pulses have too few responses ("+MEPs+"). " + tmp_str + "at a higher initial TMS pulse amplitude.";
+							} else if (MEPs>8) {
+								return "The last 10 pulses have too many responses ("+MEPs+"). " + tmp_str + "at a lower initial TMS pulse amplitude.";
+							} else {
+								return "At "+this.index+" pulses, and with reasonable number of both responses ("+MEPs+") and no responses ("+(10-MEPs)+") during the last 10 pulses, this estimate is potentially accurate.";
+							}
+						} else {
+							if (MEPs<2) {
+								return "The last 10 pulses have too few suprathreshold responses ("+MEPs+"). " + tmp_str + "at a higher initial TMS pulse amplitude.";
+							} else if (MEPs>8) {
+								return "The last 10 pulses have too few subthreshold responses ("+(10-MEPs)+"). " + tmp_str + "at a lower initial TMS pulse amplitude.";
+							} else {
+								return "At "+this.index+" pulses, and with reasonable number of both suprathreshold ("+MEPs+") and subthreshold ("+(10-MEPs)+") responses during the last 10 pulses, this estimate is potentially accurate.";
+							}
+						}
+					}
+				}
+
+				stimulate(MEP,Vpp) {									// Update routine
+					this.pulses.push(this.MT_nextPulse);				// Increment pulse list with the current pulse
+					var index=this.index;
+					var a_0=this.a_0;
+					var tmp=0;
+					
+					if (this.digital) {
+						var actualMEP=MEP;
+						var deltaY=actualMEP?1:-1;						// Step for updating the MT estimate based on binary MEP response (specific to DCS)
+					} else {
+						this.Vpps.push(Vpp);
+						var actualMEP=(Vpp>=this.Vpp_th)?true:false;	// Use Vpp to determine MEP, not dummy input for analog methods
+						var deltaY=Math.log10(Vpp/this.Vpp_th);			// Step for updating the MT estimate based on Vpp response (specific to ACS)
+					}
+					this.deltaYs.push(deltaY);							// Only utilized for analog methods
+					this.MEPs.push(actualMEP);							// Only utilized for adaptive stepping
+					
+					
+					var new_MEPs;
+					if (index==1) {
+						new_MEPs=actualMEP?1:0;
+						this.countMEPs.push(new_MEPs);
+					} else if (index<=10) {
+						new_MEPs=this.countMEPs[index-2]+(actualMEP?1:0);
+						this.countMEPs.push(new_MEPs);
+					} else {
+						if (actualMEP != this.MEPs[index-1-10]){
+							new_MEPs=actualMEP?1:-1;
+						} else {
+							new_MEPs=0;
+						}
+						this.countMEPs.push(this.countMEPs[index-2]+new_MEPs);
+					}
+					
+					if ((this.adaptive)&&(index>1)) {					// Adaptive stepping after step 1
+						if (actualMEP != this.MEPs[index-2]) {
+							this.sign_changes+=1;						// Number of sign changes
+						}
+					}
+					var actual_index=(this.adaptive)?(this.sign_changes+1):index;
+					var step=-a_0/actual_index*deltaY;
+					this.steps.push(step);
+					this.MT_estimate+=step;
+					this.MT_estimate=(this.MT_estimate>=0)?this.MT_estimate:0;		// MT estimate clamped to 0 on lower end
+					
+					// Update the "confidence interval", probable range of threshold (naive method)
+					if (this.digital) {
+						var expected_deltaY=1;
+					} else {					// for analog method, calculate average step size
+						var sum_deltaYs=0;
+						var averaging_start=(index>=10)?(index-10):0;			// average over past 10 pulses, or back to first pulse if less than 10 pulses
+						for (let i=averaging_start;i<index;i++) {
+							sum_deltaYs+=Math.abs(this.deltaYs[i]);
+						}
+						var expected_deltaY=sum_deltaYs/(index-averaging_start);
+					}
+					
+					var LB,UB;
+					if (index<10) {
+						this.isCI.push(false);	
+						var additional_steps=(20-index);
+						// Worst case scenario is one-sided stepping
+						for (let i=actual_index+1;i<actual_index+1+additional_steps;i++) {
+							tmp+=1/i;
+						}
+						tmp*=(a_0*expected_deltaY);			// scale by step size
+						LB=tmp;
+						UB=tmp;
+						
+					} else {
+						additional_steps=10;
+						LB = get_CI_range(10-this.countMEPs[index-1],index)*(a_0*expected_deltaY);
+						UB = get_CI_range(this.countMEPs[index-1],   index)*(a_0*expected_deltaY);
+						if ((this.countMEPs[index-1]>=2) && this.countMEPs[index-1]<=8) {
+							this.isCI.push(true);
+						} else {
+							this.isCI.push(false);
+						}
+					}
+					this.MT_estimate_CI=[this.MT_estimate-LB,this.MT_estimate+UB];
+					
+					// Update next pulse, clamped between 1 and 100
+					this.MT_nextPulse=(Math.round(this.MT_estimate)>0)?Math.round(this.MT_estimate):1;
+					this.MT_nextPulse=(this.MT_nextPulse<=100)?this.MT_nextPulse:100;
+				}
+			}
+
+			function MT_UI_start() {
+				document.getElementById("digital").checked=true;
+				document.getElementById("non_adapt").checked=true;
+				document.getElementById("default_a0").checked=true;
+				
+				document.getElementById("Vpp_th").disabled=true;
+				document.getElementById("Vpp_th").value=50;
+				document.getElementById("a0_custom").disabled=true;
+				document.getElementById("a0_custom").value=get_default_a0().toFixed(1);
+				
+				document.getElementById("MT_0").value=50;
+				document.getElementById("V_pp").value=50;
+				
+				document.getElementById("MT_reset").disabled=true;
+				window.addEventListener("keydown",MT_keyboard,true);
+				MT_UI();
+			}
+
+			// User interface update routine
+			function MT_UI() {
+				if (MT_estimator) {
+					var method_str;
+					if (MT_estimator.digital){
+						var CS_str="DCS1-H";
+						var method_str="Digital control sequence";
+					} else {
+						var CS_str="ACS1-H";
+						var method_str="Analog control sequence";
+					}
+					if (MT_estimator.adaptive) {
+						CS_str+="A";
+						method_str+=", adaptive stepping";
+					} else {
+						method_str+=", non-adaptive stepping";
+					}
+					//var CS_str=(MT_estimator.digital)?"DCS1-H":"ACS1-H";					// control sequency string
+					//var A_str=(MT_estimator.adaptive)?"A, adaptive":", non-adaptive";		// adaptiveness string
+					var a_0=Number(document.getElementById("a0_custom").value);
+					use_default_a0=document.getElementById("default_a0").checked;
+					var a0_str=(use_default_a0)?"default <i>a</i><sub>0</sub>.  ":("custom <i>a</i><sub>0</sub>: "+a_0.toFixed(1)+"% MSO. ");
+					
+					// additional information for analog methods on defined EMG threshold
+					var add_str="";
+					if (!(MT_estimator.digital) && (MT_estimator.Vpp_th!=50)) {
+						add_str="<br><strong>Non-default EMG threshold</strong>: "+MT_estimator.Vpp_th.toFixed(0)+" μV<sub>pp</sub>.";
+					}
+					//document.getElementById("MT_method").innerHTML="<strong>"+CS_str+A_str+" stepping.</strong> Initial step size:"+MT_estimator.a_0.toFixed(1)+"% MSO. "+add_str;
+					//document.getElementById("MT_method").innerHTML="<strong>"+CS_str+"</strong>. "+method_str+" and "+a0_str+add_str;	
+					document.getElementById("MT_nextPulse").innerHTML="Give a TMS pulse at <strong>"+MT_estimator.MT_nextPulse+"% MSO</strong>.";
+					
+					var x=MT_estimator.MT_estimate.toFixed(1);
+					var y=MT_estimator.MT_estimate_CI[0].toFixed(1);
+					var z=MT_estimator.MT_estimate_CI[1].toFixed(1);
+					
+					
+					var esti_str="Pulse No. "+MT_estimator.index+": Current estimate of MT is <strong>"+x+"% MSO</strong>. ";
+					/*if (MT_estimator.index<10) {
+						esti_str+="with a probable range of ("+y+"%, "+z+"%) MSO.";
+					} else if (MT_estimator.isCI[MT_estimator.index-1]){
+						esti_str+="with a 95% confidence interval of ["+y+"%, "+z+"%] MSO.";
+					} else if (MT_estimator.countMEPs[MT_estimator.index-1]>7) {
+						esti_str+="which is outside of the probable range of ("+y+"%, "+z+"%] MSO.";
+					} else {
+						esti_str+="which is outside of the probable range of ["+y+"%, "+z+"%) MSO.";
+					}*/
+					
+					
+					document.getElementById("MT_estimate").innerHTML=esti_str;
+					document.getElementById("MT_estimateDescription").innerHTML=MT_estimator.description;
+				} else {
+					//document.getElementById("MT_method").innerHTML="";
+					document.getElementById("MT_nextPulse").innerHTML="Start procedure first.";
+					document.getElementById("MT_estimate").innerHTML="Current MT estimate is undefined.";
+					document.getElementById("MT_estimateDescription").innerHTML="";
+				}
+			}
+
+			// Keyboard event listener, for quick data entry
+			function MT_keyboard(event) {
+				// Ignore already processed events
+				if (event.defaultPrevented) {
+					return;
+				}
+				
+				if(!(event.ctrlKey || event.altKey || event.shiftKey || event.metaKey)){
+					switch (event.key) {
+						case "s":
+							if (!document.getElementById("MT_start").disabled) {
+								MT_start();
+							}
+							break;
+						case "r":
+							if (!document.getElementById("MT_reset").disabled) {
+								MT_reset();
+							}
+							break;
+						case "c":
+							copyToClipboard();
+							break;
+						case "d":
+							downloadFile();
+							break;
+						case "y":
+							if (MT_estimator.digital) {
+								MT_stimulate(true);
+							}
+							break;
+						case "n":
+							if (MT_estimator.digital) {
+								MT_stimulate(false);
+							}
+							break;
+						case "Enter":
+							if (!MT_estimator.digital) {
+								MT_stimulate(false);		// Dummy for analog method
+							}
+							break;
+						default: // Ignore other events and let them pass forward
+							//return;
+					}
+				}
+				// Prevent processed events from propagating
+				//event.preventDefault();
+			}
+
+			// Process start button
+			function MT_start() {
+				var MT_0=document.getElementById("MT_0").value;
+				var Vpp_th=document.getElementById("Vpp_th").value;
+				var digital=(document.getElementById("digital").checked)?true:false;
+				var adapt=(document.getElementById('adapt').checked)?true:false;
+				var a_0=document.getElementById("a0_custom").value;
+				
+				try {
+					// Create MT estimator object
+					MT_estimator=new SA_MT_estimator(MT_0, Vpp_th, digital, adapt, a_0);
+
+					// Set states for buttons and inputs for choosing methods and setting parameters, disable all except reset button
+					document.getElementById("non_adapt").disabled=true;
+					document.getElementById("adapt").disabled=true;
+					document.getElementById("digital").disabled=true;
+					document.getElementById("analog").disabled=true;
+					document.getElementById("default_a0").disabled=true;
+					document.getElementById("custom_a0").disabled=true;
+					
+					document.getElementById("Vpp_th").disabled=true;
+					document.getElementById("a0_custom").disabled=true;
+					document.getElementById("MT_0").disabled=true;
+					
+					document.getElementById("MT_start").disabled=true;
+					document.getElementById("Start_msg").hidden=true;
+					document.getElementById("MT_reset").disabled=false;
+					document.getElementById("Reset_msg").hidden=false;
+					
+					// Reset pulse list, add header to it based on method
+					document.getElementById("MT_pulseList").rows=MT_estimator.index+4;
+					
+					// Set states for buttons and inputs related to MT procedure
+					document.getElementById("response_input").hidden=false;
+					document.getElementById("MT_estimate").hidden=false;
+					document.getElementById("MT_estimateDescription").hidden=false;
+					if (digital) {							// Enable and display buttons related to digital method
+						document.getElementById("is_suprathreshold_bottoms").hidden=false;
+						document.getElementById("MT_MEP").disabled=false;
+                        document.getElementById("graphbutton").hidden=true;
+						document.getElementById("MT_noMEP").disabled=false;
+						//document.getElementById("MT_pulseList").innerHTML="No.\tAmplitude\tResponse\tStep\tNext\tMT\tMT range/CI\n";
+						var info_str = "No.\tStim.\tResp.\tStep\tNext\tMT\tCount\n";
+					} else {								// Enable and display buttons related to analog method
+						document.getElementById("response_Vpp_box").hidden=false;
+						document.getElementById("V_pp").disabled=false;
+						document.getElementById("Enter_Vpp").disabled=false;
+						//document.getElementById("MT_pulseList").innerHTML="No.\tAmplitude\tEMG\tResponse\tStep\tNext\tMT\tMT range/CI\n";
+						var info_str = "No.\tStim.\tEMG\tResp.\tStep\tNext\tMT\tCount\n";
+					}
+					var version_str = "SAMT version 1.4.3, June 08, 2023.\n";
+					var date_str = "Procedure start time:\t"+getCurrentDateAndTime()+"\n";
+					document.getElementById("MT_pulseList").innerHTML=version_str+date_str+info_str;
+					
+					// Add event listener for keyboard
+					//window.addEventListener("keydown",MT_keyboard,true);
+				} catch (e) {
+					alert(e);
+				}
+				// Update user interface
+				MT_UI();
+			}
+
+			// Process reset button
+			function MT_reset() {
+				var digital=(document.getElementById("digital").checked)?true:false;
+				var default_a0=(document.getElementById('default_a0').checked)?true:false;
+				
+				// Remove MT estimator object
+				MT_estimator=null;
+				
+				// Reset button states
+				document.getElementById("non_adapt").disabled=false;
+				document.getElementById("adapt").disabled=false;
+				document.getElementById("digital").disabled=false;
+				document.getElementById("analog").disabled=false;
+				document.getElementById("default_a0").disabled=false;
+				document.getElementById("custom_a0").disabled=false;
+					
+				if (!digital) {		//Enable threshold definition only when analog is selected
+					document.getElementById("Vpp_th").disabled=false;
+					//document.getElementById("input_Vpp_th_box").hidden=false;
+				} else {
+					//document.getElementById("input_Vpp_th_box").hidden=true;
+				}
+				if (!default_a0) {
+					document.getElementById("a0_custom").disabled=false;
+				}
+				document.getElementById("MT_0").disabled=false;
+				
+				document.getElementById("MT_start").disabled=false;
+				document.getElementById("Start_msg").hidden=false;
+				document.getElementById("MT_reset").disabled=true;
+				document.getElementById("Reset_msg").hidden=true;
+				
+				document.getElementById("response_input").hidden=true;
+				document.getElementById("is_suprathreshold_bottoms").hidden=true;
+				document.getElementById("MT_estimate").hidden=true;
+				document.getElementById("MT_estimateDescription").hidden=true;
+				document.getElementById("MT_MEP").disabled=true;
+				document.getElementById("MT_noMEP").disabled=true;
+				
+				document.getElementById("response_Vpp_box").hidden=true;
+				document.getElementById("Enter_Vpp").disabled=true;
+				document.getElementById("V_pp").disabled=true;
+				
+				// Remove event listener from keyboard
+				//window.removeEventListener("keydown",MT_keyboard,true);
+				
+				// Update user inferface
+				MT_UI();
+			}
+
+			function getCurrentDateAndTime() {
+				const dateTime=new Date();
+				return dateTime.toLocaleString();
+			}
+
+			// Process stimulate button
+			function MT_stimulate(MEP) {
+				var button_name,button_color;
+				var flash_time=20;
+				if (!MT_estimator.digital) {			// Get EMG response for analog methods
+					button_name="Enter_Vpp";					
+					try {
+						var Vpp=document.getElementById("V_pp").value;
+						if (Vpp=="") {					// Check for a missing value
+							throw 'Please specify EMG response.';
+						}
+						Vpp=Number(Vpp);				// Convert to a 'Number' and check for a value in the desired range
+						if (!(Vpp>0 && Vpp<=1000000)){ 	// Important to check for the inverse of range to capture a NaN
+							throw 'EMG response is not a positive value within 1 V.';
+						}
+					} catch (e) {
+						alert(e);
+						return
+					}
+				} else {
+					var Vpp=50;							// Dummy value for digital methods
+					if (MEP) {
+						button_name="MT_MEP";
+					} else {
+						button_name="MT_noMEP";
+					}
+				}
+				button_color=document.getElementById(button_name).className;
+				document.getElementById(button_name).className="w3-black";
+				
+				// Update MT estimator
+				MT_estimator.stimulate(MEP,Vpp);
+				
+				// Update pulse list
+				var u=MT_estimator.pulses[MT_estimator.index-1];
+				if (Math.abs(MT_estimator.steps[MT_estimator.index-1])>=1){
+					var v=MT_estimator.steps[MT_estimator.index-1].toFixed(1);
+				} else {
+					var v=MT_estimator.steps[MT_estimator.index-1].toFixed(2);
+				}
+				if (MT_estimator.steps[MT_estimator.index-1]>=0){
+					v=("+"+v);
+				}
+				var w=MT_estimator.MT_nextPulse;
+				var x=MT_estimator.MT_estimate.toFixed(1);
+				var y=MT_estimator.MT_estimate_CI[0].toFixed(1);
+				var z=MT_estimator.MT_estimate_CI[1].toFixed(1);
+				var uu=MT_estimator.countMEPs[MT_estimator.index-1];
+				var vv=10;
+				if (MT_estimator.index<10) {
+					vv=MT_estimator.index;
+				}
+				var str=MT_estimator.index+"\t"+u+"\t";
+				if (MT_estimator.digital){
+					var actualMEP=(MEP)?"Yes":"No";
+					str+=actualMEP;
+				} else {
+					var actualMEP=(Vpp>=MT_estimator.Vpp_th)?"Suprathreshold":"Subthreshold";
+					str+=Vpp.toFixed(0)+"\t"+actualMEP;
+				}
+				str+="\t"+v+"\t"+w+"\t"+x+"\t"+uu+"/"+vv;
+				/*
+				if (MT_estimator.index<10) {
+					str+="\t("+y+", "+z+")";
+				} else if (MT_estimator.isCI[MT_estimator.index-1]){
+					str+="\t["+y+", "+z+"]";
+				} else if (MT_estimator.countMEPs[MT_estimator.index-1]>7) {
+					str+="\t("+y+", "+z+"]";
+				} else {
+					str+="\t["+y+", "+z+")";
+				}*/
+				str+="\n";
+				
+				var lines = document.getElementById("MT_pulseList").innerHTML.split('\n');
+				var newout=lines[0]+"\n"+lines[1]+"\n";
+				document.getElementById("MT_pulseList").rows=MT_estimator.index+4;
+				if (MT_estimator.index==29) {
+					newout+="Procedure end time:\t"+getCurrentDateAndTime()+"\n";
+					document.getElementById("MT_pulseList").rows=MT_estimator.index+5;
+				}
+				newout+=(lines[2]+"\n"+str);
+				for(var i = 3;i < lines.length-1;i++){
+					newout+=lines[i]+"\n";
+				}
+				newout+=lines[i];
+				document.getElementById("MT_pulseList").innerHTML=newout;
+				
+				// Update user inferface
+				MT_UI();
+				
+				setTimeout(function(){document.getElementById(button_name).className=button_color;}, flash_time);
+								
+				if (MT_estimator.index==29) {
+					document.getElementById("response_input").hidden=true;
+					document.getElementById("MT_nextPulse").innerHTML="<strong>Procedure terminated!</strong> Reset to start a new procedure.";
+					document.getElementById("MT_MEP").disabled=true;
+                    document.getElementById("graphing").hidden=false;
+					document.getElementById("MT_noMEP").disabled=true;
+				}
+			}
+
+            function drawGraph() {
+                
+
             }
-        </style>
+
+			function copyToClipboard() {
+				var element=document.getElementById("MT_pulseList");
+				
+				element.select();
+				element.setSelectionRange(0,9999);
+				navigator.clipboard.writeText(element.textContent).then(() => {alert("Copied pulse list to clipboard.")}).catch(() => {alert("Copy to clipboard failed, a known problem with Android phones.")});
+			}
+
+			function downloadFile() {
+				var text = document.getElementById("MT_pulseList").innerHTML;
+				const dateTime=new Date();
+				var M_str,d_str,h_str,m_str;
+				M_str=""+(dateTime.getMonth()+1);
+				d_str=""+dateTime.getDate();
+				h_str=""+dateTime.getHours();
+				m_str=""+dateTime.getMinutes();
+				if ((dateTime.getMonth()+1) < 10) {
+					M_str="0"+M_str;
+				}
+				if (dateTime.getDate() < 10) {
+					d_str="0"+d_str;
+				} 
+				if (dateTime.getHours() < 10) {
+					h_str="0"+h_str;
+				}
+				if (dateTime.getMinutes() < 10) {
+					m_str="0"+m_str;
+				}
+				var filename = "SAMT_"+dateTime.getFullYear()+M_str+d_str+"-"+h_str+m_str+"_subjectID.txt";
+				//var filename = "SAMT_subjectID.txt";
+				download(filename, text);
+			}
+
+			function download(filename, text) {
+				var element = document.createElement('a');
+				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+				element.setAttribute('download', filename);
+				element.style.display = 'none';
+				document.body.appendChild(element);
+				element.click();
+				document.body.removeChild(element);
+			}
+
+			function handleClick_CS(radio) {
+				if (radio.value=="DCS1") {
+					//document.getElementById("input_Vpp_th_box").hidden=true;
+					document.getElementById("Vpp_th").disabled=true;
+					document.getElementById("Vpp_th").value=50;
+					document.getElementById("V_pp").value=50;
+				} else {
+					//document.getElementById("input_Vpp_th_box").hidden=false;
+					document.getElementById("Vpp_th").disabled=false;
+				}
+				if (document.getElementById("default_a0").checked){
+					document.getElementById("a0_custom").value=get_default_a0().toFixed(1);
+				}
+			}
+
+			function handleClick_A(radio) {
+				if (document.getElementById("default_a0").checked){
+					document.getElementById("a0_custom").value=get_default_a0().toFixed(1);
+				}
+			}
+
+			function handleClick_a0(radio) {
+				if (radio.value=="default") {
+					//document.getElementById("input_a0_box").hidden=true;
+					document.getElementById("a0_custom").disabled=true;
+					document.getElementById("a0_custom").value=get_default_a0().toFixed(1);
+				} else {
+					//document.getElementById("input_a0_box").hidden=false;
+					document.getElementById("a0_custom").disabled=false;
+				}
+				if (document.getElementById('default_a0').checked){
+					
+				}
+			}
+
+			function get_default_a0() {
+				var a_0=6.67;	
+				if (document.getElementById('digital').checked){
+					if (document.getElementById('adapt').checked){
+						a_0*=0.63;			// Optimal
+					} else {
+											// default is optimal
+					}
+				} else {
+					if (document.getElementById('adapt').checked){
+						a_0*=0.79;				// Optimal
+					} else {
+						a_0*=1.58;				// Optimal
+					}
+				}
+				return a_0;
+			}
+
+			function get_CI_range(MEPs,index) {
+				var LUT;
+				if (MEPs<=2) {
+					LUT = [0.718771, 0.668771, 0.625481, 0.587603, 0.554158, 0.524396, 0.497729, 0.473691, 0.451904, 0.432063, 0.413914, 0.397247, 0.381886, 0.367682, 0.354507, 0.342252, 0.330823, 0.320139, 0.310129, 0.300731, 0.291889, 0.283556, 0.275688, 0.268248, 0.261200, 0.254516, 0.248167, 0.242128, 0.236378, 0.230895, 0.225662, 0.220662, 0.215880, 0.211301, 0.206913, 0.202705, 0.198664, 0.194782, 0.191049, 0.187457, 0.183998, 0.180665, 0.177451, 0.174349, 0.171354, 0.168461, 0.165663, 0.162958, 0.160339, 0.157804, 0.155347, 0.152966, 0.150657, 0.148417, 0.146243, 0.144131, 0.142080, 0.140086, 0.138148, 0.136263, 0.134428, 0.132643, 0.130904, 0.129210, 0.127559, 0.125951, 0.124382, 0.122852, 0.121359, 0.119902, 0.118480, 0.117091, 0.115735, 0.114409, 0.113114, 0.111847, 0.110609, 0.109398, 0.108213, 0.107053, 0.105918, 0.104807, 0.103719, 0.102653, 0.101609, 0.100586, 0.099584, 0.098601, 0.097638, 0.096693, 0.095766];
+						// index: 10-100 -> 0-90
+				} else if (MEPs==3){
+					LUT = [0.607660, 0.563508, 0.525481, 0.492364, 0.463249, 0.437439, 0.414396, 0.393691, 0.374981, 0.357989, 0.342486, 0.328282, 0.315220, 0.303166, 0.292007, 0.281646, 0.272000, 0.262997, 0.254574, 0.246677, 0.239258, 0.232274, 0.225688, 0.219467, 0.213581, 0.208004, 0.202712, 0.197684, 0.192899, 0.188342, 0.183996, 0.179846, 0.175880, 0.172085, 0.168452, 0.164969, 0.161627, 0.158418, 0.155335, 0.152370, 0.149516, 0.146767, 0.144117, 0.141562, 0.139096, 0.136714, 0.134413, 0.132188, 0.130036, 0.127953, 0.125936, 0.123981, 0.122086, 0.120248, 0.118465, 0.116734, 0.115053, 0.113420, 0.111832, 0.110289, 0.108787, 0.107326, 0.105904, 0.104519, 0.103169, 0.101854, 0.100573, 0.099323, 0.098104, 0.096914, 0.095753, 0.094619, 0.093512, 0.092431, 0.091374, 0.090342, 0.089332, 0.088345, 0.087379, 0.086434, 0.085510, 0.084605, 0.083719, 0.082851, 0.082001, 0.081169, 0.080353, 0.079554, 0.078770, 0.078001, 0.077248];
+				} else if (MEPs==4){
+					LUT = [0.495861, 0.457660, 0.424980, 0.396693, 0.371963, 0.350153, 0.330773, 0.313434, 0.297830, 0.283711, 0.270875, 0.259152, 0.248405, 0.238515, 0.229385, 0.220928, 0.213074, 0.205760, 0.198933, 0.192544, 0.186553, 0.180924, 0.175626, 0.170629, 0.165908, 0.161442, 0.157211, 0.153195, 0.149380, 0.145750, 0.142293, 0.138996, 0.135848, 0.132840, 0.129962, 0.127206, 0.124565, 0.122031, 0.119598, 0.117260, 0.115012, 0.112849, 0.110765, 0.108758, 0.106821, 0.104952, 0.103148, 0.101405, 0.099719, 0.098089, 0.096511, 0.094983, 0.093503, 0.092068, 0.090677, 0.089327, 0.088016, 0.086744, 0.085507, 0.084306, 0.083138, 0.082001, 0.080896, 0.079820, 0.078772, 0.077751, 0.076756, 0.075787, 0.074841, 0.073919, 0.073020, 0.072142, 0.071285, 0.070448, 0.069630, 0.068831, 0.068051, 0.067288, 0.066541, 0.065811, 0.065097, 0.064399, 0.063715, 0.063045, 0.062390, 0.061748, 0.061119, 0.060502, 0.059898, 0.059306, 0.058726];
+				} else if (MEPs==5){
+					LUT = [0.383107, 0.353620, 0.333815, 0.316109, 0.300190, 0.285799, 0.272729, 0.260806, 0.249884, 0.239843, 0.230581, 0.222009, 0.214054, 0.206651, 0.199745, 0.193286, 0.187233, 0.181549, 0.176201, 0.171159, 0.166399, 0.161897, 0.157633, 0.153587, 0.149745, 0.146091, 0.142611, 0.139294, 0.136127, 0.133101, 0.130208, 0.127437, 0.124783, 0.122236, 0.119792, 0.117444, 0.115186, 0.113013, 0.110921, 0.108905, 0.106961, 0.105086, 0.103275, 0.101525, 0.099834, 0.098199, 0.096616, 0.095083, 0.093598, 0.092159, 0.090764, 0.089410, 0.088096, 0.086820, 0.085581, 0.084377, 0.083206, 0.082067, 0.080959, 0.079880, 0.078830, 0.077807, 0.076810, 0.075839, 0.074891, 0.073968, 0.073066, 0.072187, 0.071328, 0.070490, 0.069671, 0.068871, 0.068089, 0.067324, 0.066577, 0.065846, 0.065131, 0.064431, 0.063746, 0.063076, 0.062419, 0.061776, 0.061146, 0.060529, 0.059925, 0.059332, 0.058751, 0.058181, 0.057622, 0.057073, 0.056535];
+				} else if (MEPs==6){
+					LUT = [0.240250, 0.221996, 0.207834, 0.196192, 0.187058, 0.179106, 0.171749, 0.164933, 0.158599, 0.152557, 0.146958, 0.141753, 0.136903, 0.132374, 0.128134, 0.124157, 0.120419, 0.116899, 0.113579, 0.110442, 0.107474, 0.104661, 0.101991, 0.099454, 0.097041, 0.094741, 0.092549, 0.090455, 0.088454, 0.086540, 0.084706, 0.082949, 0.081263, 0.079645, 0.078089, 0.076593, 0.075154, 0.073767, 0.072431, 0.071143, 0.069899, 0.068698, 0.067538, 0.066416, 0.065331, 0.064281, 0.063264, 0.062279, 0.061324, 0.060397, 0.059499, 0.058626, 0.057779, 0.056956, 0.056157, 0.055379, 0.054623, 0.053887, 0.053170, 0.052472, 0.051793, 0.051131, 0.050485, 0.049856, 0.049242, 0.048643, 0.048059, 0.047488, 0.046931, 0.046386, 0.045854, 0.045335, 0.044826, 0.044330, 0.043844, 0.043368, 0.042903, 0.042448, 0.042002, 0.041565, 0.041138, 0.040719, 0.040309, 0.039906, 0.039512, 0.039126, 0.038747, 0.038375, 0.038010, 0.037652, 0.037301];
+				} else if (MEPs==7){
+					LUT = [0.077834, 0.072068, 0.064476, 0.058808, 0.053382, 0.049652, 0.044625, 0.041215, 0.037574, 0.034399, 0.031614, 0.029156, 0.026976, 0.025034, 0.023295, 0.021732, 0.020322, 0.019046, 0.017887, 0.016831, 0.015866, 0.014982, 0.014170, 0.013423, 0.012734, 0.012096, 0.011505, 0.010957, 0.010447, 0.009972, 0.009529, 0.009114, 0.008727, 0.008363, 0.008022, 0.007701, 0.007399, 0.007115, 0.006847, 0.006593, 0.006354, 0.006127, 0.005912, 0.005709, 0.005515, 0.005332, 0.005157, 0.004991, 0.004833, 0.004682, 0.004538, 0.004401, 0.004270, 0.004144, 0.004024, 0.003910, 0.003800, 0.003694, 0.003593, 0.003496, 0.003403, 0.003314, 0.003228, 0.003145, 0.003066, 0.002989, 0.002916, 0.002845, 0.002776, 0.002710, 0.002646, 0.002585, 0.002526, 0.002468, 0.002413, 0.002360, 0.002308, 0.002258, 0.002209, 0.002162, 0.002117, 0.002073, 0.002030, 0.001989, 0.001949, 0.001910, 0.001872, 0.001835, 0.001800, 0.001765, 0.001732];
+				} else if (MEPs==8){
+					LUT = [-0.101124, -0.096996, -0.092667, -0.088879, -0.085748, -0.082506, -0.079423, -0.076432, -0.073537, -0.070864, -0.068386, -0.066087, -0.064054, -0.062135, -0.060322, -0.058606, -0.056981, -0.055441, -0.053979, -0.052589, -0.051267, -0.050009, -0.048809, -0.047664, -0.046571, -0.045525, -0.044525, -0.043567, -0.042649, -0.041768, -0.040922, -0.040109, -0.039328, -0.038576, -0.037852, -0.037155, -0.036482, -0.035833, -0.035207, -0.034602, -0.034017, -0.033452, -0.032904, -0.032375, -0.031862, -0.031365, -0.030883, -0.030416, -0.029962, -0.029522, -0.029094, -0.028679, -0.028275, -0.027882, -0.027500, -0.027129, -0.026767, -0.026415, -0.026071, -0.025737, -0.025411, -0.025093, -0.024783, -0.024481, -0.024185, -0.023897, -0.023616, -0.023341, -0.023072, -0.022810, -0.022553, -0.022302, -0.022057, -0.021817, -0.021582, -0.021352, -0.021127, -0.020906, -0.020691, -0.020479, -0.020272, -0.020069, -0.019870, -0.019675, -0.019483, -0.019296, -0.019112, -0.018931, -0.018754, -0.018580, -0.018409];
+				} else {
+					LUT = [-0.306690, -0.284458, -0.264977, -0.247920, -0.233435, -0.220602, -0.208752, -0.198138, -0.188571, -0.179902, -0.172008, -0.164788, -0.158159, -0.152050, -0.146401, -0.141162, -0.136289, -0.131744, -0.127504, -0.123571, -0.119828, -0.116307, -0.112990, -0.109858, -0.106896, -0.104091, -0.101430, -0.098903, -0.096500, -0.094211, -0.092029, -0.089947, -0.087957, -0.086054, -0.084232, -0.082486, -0.080811, -0.079203, -0.077658, -0.076172, -0.074743, -0.073366, -0.072039, -0.070760, -0.069525, -0.068333, -0.067182, -0.066068, -0.064991, -0.063949, -0.062940, -0.061962, -0.061014, -0.060094, -0.059203, -0.058337, -0.057496, -0.056679, -0.055886, -0.055114, -0.054363, -0.053632, -0.052921, -0.052229, -0.051554, -0.050897, -0.050256, -0.049631, -0.049022, -0.048427, -0.047847, -0.047280, -0.046727, -0.046187, -0.045659, -0.045143, -0.044638, -0.044145, -0.043662, -0.043190, -0.042728, -0.042276, -0.041833, -0.041399, -0.040975, -0.040559, -0.040151, -0.039752, -0.039360, -0.038976, -0.038599];
+				}
+				return (index<=100)?LUT[index-10]:LUT[90];
+			}
+		</script>
     </head>
-        <body>
-            <canvas id="chartCanvas" width="500" height="400"></canvas>
-            <script>
-                // Sample data for the chart
-                const data = [
-                    { x: 0, y: 20 },
-                    { x: 1, y: 40 },
-                    { x: 2, y: 10 },
-                    { x: 3, y: 50 },
-                    { x: 4, y: 30 },
-                    { x: 5, y: 45 },
-                ];
+	
+	<body onload="MT_UI_start()">
+		<div class="w3-container w3-indigo">
+			<h1>TMS Motor Threshold (MT) Estimation App</h1>
+		</div>
+		<div class="w3-container w3-blue">
+			<h2>Stochastic Approximator of MT (SAMT)</h2>
+		</div>
+		<div class="w3-container">
+			<font size="1">
+				<p>
+					version 1.4.3, June 08, 2023.<br>
+					© 2022-2023, Boshuo Wang, Lari Koponen, Stefan Goetz, Angel Peterchev, at Duke University, the University of Birmingham.<br>
+					All rights reserved.
+				</p>
+			</font>
+		</div>
+		
+		<div class="w3-container w3-light-blue">
+			<h3>Initialize procedure</h3>
+		</div>
+		<div class="w3-container">
+			<table><tbody>
+			<tr><td><fieldset hidden="">
+				<legend>Estimation method</legend>
+					<fieldset>
+						<legend>Control sequence</legend>
+						<div>
+							<input type="radio" id="digital" name="control_sequence" onclick="handleClick_CS(this);" value="DCS1" checked="">
+							<label for="DCS1">Digital (default)</label>
+						</div>
+						<div>	
+							<input type="radio" id="analog" name="control_sequence" onclick="handleClick_CS(this);" value="ACS1">
+							<!--<div id="input_Vpp_th_box">-->
+							<label for="ACS1">Analog, with EMG threshold:</label>
+							<input type="number" id="Vpp_th" name="Vpp_th" max="1000" min="1" placeholder="50" step="1" value="50" size="4" disabled="" required="">
+							μV<sub>pp</sub>, (0 to 1000].
+						</div>	
+					</fieldset>
+					<fieldset>
+						<legend>Stepping adaptiveness of control sequence</legend>
+						<div>
+							<input type="radio" id="non_adapt" name="stepping_method" onclick="handleClick_A(this);" value="non_adapt" checked="">
+							<label for="non_adapt">Non-adaptive (default)</label>
+						</div>
+						<div>
+							<input type="radio" id="adapt" name="stepping_method" onclick="handleClick_A(this);" value="adapt">
+							<label for="adapt">Adaptive</label>
+						</div>
+						
+					</fieldset>
+					<fieldset>
+						<legend>Initial step size of control sequence (<i>a</i><sub>0</sub>)</legend>
+						<div>
+							<input type="radio" id="default_a0" name="a0" onclick="handleClick_a0(this);" value="default" checked="">
+								
+							<label for="default_a0">Optimal (default)</label>
+						</div>
+						<div>								
+							<input type="radio" id="custom_a0" name="a0" onclick="handleClick_a0(this);" value="custom">
+							<label for="custom_a0">Custom:</label>
+							<input type="number" id="a0_custom" name="a0_custom" max="20" min="1" placeholder="6.7" step="0.1" value="6.7" size="4" disabled="" required="">
+							% MSO, [1, 20].
+						</div>
+					</fieldset>
+					<p style="font-size:85%;">
+						Please refer to the information below for further details on the methods.
+					</p>
+			</fieldset></td></tr>
+			<tr><td><fieldset>
+				<legend>Enter initial (suprathreshold) TMS pulse amplitude (intensity)</legend>
+				<input type="number" id="MT_0" name="MT_0" max="100" min="1" placeholder="50" step="1" value="50" size="3" required="">
+				% MSO
+			</fieldset></td></tr>
+			</tbody></table>
+			
+			<p id="Start_msg"><button class="w3-green" id="MT_start" onclick="MT_start();"style="height:35px;width:80px"><u>S</u>tart</button> and move to next section. </p>
+			<p id="Reset_msg" hidden=""><button class="w3-black" id="MT_reset" onclick="MT_reset();"style="height:35px;width:80px"><u>R</u>eset</button> to start a new procedure.</p>
+		</div>
 
-                // Function to draw the chart
-                function drawChart(data) {
-                    const canvas = document.getElementById('chartCanvas');
-                    const ctx = canvas.getContext('2d');
+		<div class="w3-container w3-light-blue">
+			<h3>Motor threshold estimate</h3>
+		</div>
+		<div class="w3-container">
+			<p hidden=""><output id="MT_method"></output></p>
+			<p><output id="MT_nextPulse">Start procedure first.</output></p>
+			<table id="response_input" hidden=""><tbody><tr><td>
+			<fieldset id="is_suprathreshold_bottoms" hidden="">
+				<legend>TMS response present / MEP suprathreshold?</legend>
+				<button class="w3-green" id="MT_MEP" onclick="MT_stimulate(true);" disabled="" style="height:75px;width:300px"><u>Y</u>es: present / suprathreshold</button>
+				<button class="w3-red" id="MT_noMEP" onclick="MT_stimulate(false);" disabled="" style="height:75px;width:300px"><u>N</u>o: absent / subthreshold</button>
+			</fieldset>
+			<fieldset id="response_Vpp_box" hidden="">
+				<legend>TMS response</legend>
+				<div>
+					<label>EMG:</label>
+					<input type="number" id="V_pp" name="V_pp" max="1000000" min="0" placeholder="50" step="1" value="50" size="6" required="">
+					μV<sub>pp</sub>, (0 to 10<sup>6</sup>].
+				</div>
+				<div>
+					<button class="w3-green" id="Enter_Vpp" onclick="MT_stimulate(false);" disabled=""style="height:35px;width:80px"><u>Enter</u></button>	<!--Dummy input for analog methods-->
+				</div>
+			</fieldset>
+			</td></tr></tbody></table>
+			<p>
+				<output id="MT_estimate" hidden=""></output>
+				<br>
+				<output id="MT_estimateDescription" hidden=""></output>
+			</p>
+		</div>
 
-                    // Adjust canvas size
-                    canvas.width = 680;
-                    canvas.height = 400;
+		<div class="w3-container w3-light-blue">
+			<h3>List of pulses for latest estimation</h3>
+		</div>
+        <div class="w3-container" id="graphbuttoncontainer">
+            <br>
+            <button class="w3-green" id="graphbutton" hidden="" onclick="drawGraph();"style="height:35px;width:80px"><u>G</u>raph</button>
+        </div>
+        <div class="w3-container" id="graphing"> 
+            <body>
+                <canvas id="chartCanvas" width="700" height="400"></canvas>
+                <script>
+                    // Initialize empty xValues and yValues arrays
+                    let xValues = [];
+                    let yValues = [];
+                    let colors = [];
 
-                    // Clear the canvas
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // Function to draw the chart based on the provided xValues and yValues
+                    function drawChart(xValues, yValues, colors) {
+                        const canvas = document.getElementById('chartCanvas');
+                        const ctx = canvas.getContext('2d');
 
-                    // Set up chart properties
-                    const margin = { top: 40, right: 20, bottom: 80, left: 80 };
-                    const chartWidth = canvas.width - margin.left - margin.right;
-                    const chartHeight = canvas.height - margin.top - margin.bottom;
+                        // Clear the canvas
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    // Find minimum and maximum values
-                    const minX = 0;
-                    const maxX = 30;
-                    const minY = 0;
-                    const maxY = 100;
+                        // Set up chart properties
+                        const margin = { top: 40, right: 20, bottom: 80, left: 80 };
+                        const chartWidth = canvas.width - margin.left - margin.right;
+                        const chartHeight = canvas.height - margin.top - margin.bottom;
 
-                    // Calculate scaling factors
-                    const xScale = chartWidth / (maxX - minX);
-                    const yScale = chartHeight / (maxY - minY);
+                        // Find minimum and maximum values
+                        const minX = 1;
+                        const maxX = 30;
+                        const minY = 0;
+                        const maxY = 100;
 
-                    // Draw x and y axis lines
-                    ctx.beginPath();
-                    ctx.moveTo(margin.left, margin.top);
-                    ctx.lineTo(margin.left, canvas.height - margin.bottom);
-                    ctx.lineTo(canvas.width - margin.right, canvas.height - margin.bottom);
-                    ctx.strokeStyle = '#000';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
+                        // Calculate scaling factors
+                        const xScale = chartWidth / (maxX - minX);
+                        const yScale = chartHeight / (maxY - minY);
 
-                    // Draw x axis tick marks and labels
-                    const xTickInterval = 1;
-                    ctx.font = '14px Arial';
-                    ctx.fillStyle = '#000';
-                    ctx.textAlign = 'center';
-                    for (let i = minX; i <= maxX; i += xTickInterval) {
-                        const x = margin.left + (i - minX) * xScale;
-                        const y = canvas.height - margin.bottom + 20;
-
+                        // Draw x and y axis lines
                         ctx.beginPath();
-                        ctx.moveTo(x, canvas.height - margin.bottom);
-                        ctx.lineTo(x, canvas.height - margin.bottom + 10);
+                        ctx.moveTo(margin.left, margin.top);
+                        ctx.lineTo(margin.left, canvas.height - margin.bottom);
+                        ctx.lineTo(canvas.width - margin.right, canvas.height - margin.bottom);
                         ctx.strokeStyle = '#000';
                         ctx.lineWidth = 2;
                         ctx.stroke();
 
-                        ctx.fillText(i, x, y);
-                    }
+                        // Draw x axis tick marks and labels
+                        const xTickInterval = 1;
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.textAlign = 'center';
+                        for (let i = minX; i <= maxX; i += xTickInterval) {
+                            const x = margin.left + (i - minX) * xScale;
+                            const y = canvas.height - margin.bottom + 20;
 
-                    // Draw x axis label
-                    ctx.font = '16px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('TMS pulse number', canvas.width / 2, canvas.height - 15);
+                            ctx.beginPath();
+                            ctx.moveTo(x, canvas.height - margin.bottom);
+                            ctx.lineTo(x, canvas.height - margin.bottom + 10);
+                            ctx.strokeStyle = '#000';
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
 
-                    // Draw y axis tick marks and labels
-                    const yTickInterval = 10;
-                    ctx.font = '14px Arial';
-                    ctx.fillStyle = '#000';
-                    ctx.textAlign = 'right';
-                    for (let i = minY; i <= maxY; i += yTickInterval) {
-                        const x = margin.left - 10;
-                        const y = canvas.height - margin.bottom - (i - minY) * yScale;
-
-                        ctx.beginPath();
-                        ctx.moveTo(margin.left, y);
-                        ctx.lineTo(margin.left - 10, y);
-                        ctx.strokeStyle = '#000';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-
-                        ctx.save();
-                        ctx.translate(x, y);
-                        ctx.rotate(-Math.PI / 2);
-                        ctx.fillText(i, 0, 0);
-                        ctx.restore();
-                    }
-
-                    // Draw y axis label
-                    ctx.font = '16px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.save();
-                    ctx.translate(35, canvas.height / 2);
-                    ctx.rotate(-Math.PI / 2);
-                    ctx.fillText('TMS amplitude (% MSO)', 0, 0);
-                    ctx.restore();
-
-                    // Draw data points and lines
-                    data.forEach(point => {
-                        const x = margin.left + (point.x - minX) * xScale;
-                        const y = canvas.height - margin.bottom - (point.y - minY) * yScale;
-
-                        ctx.beginPath();
-                        ctx.arc(x, y, 6, 0, Math.PI * 2);
-                        ctx.fillStyle = point.x % 2 === 0 ? '#00f' : '#f00';
-                        ctx.fill();
-                    });
-
-                    // Draw lines connecting the points
-                    ctx.beginPath();
-                    ctx.strokeStyle = '#000000';
-                    ctx.lineWidth = 2;
-                    data.forEach((point, index) => {
-                        const x = margin.left + (point.x - minX) * xScale;
-                        const y = canvas.height - margin.bottom - (point.y - minY) * yScale;
-
-                        if (index === 0) {
-                        ctx.moveTo(x, y);
-                        } else {
-                        ctx.lineTo(x, y);
+                            ctx.fillText(i, x, y);
                         }
-                    });
 
-                    ctx.stroke();
+                        // Draw x axis label
+                        ctx.font = '16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('TMS pulse number', canvas.width / 2, canvas.height - 15);
+
+                        // Draw y axis tick marks and labels
+                        const yTickInterval = 10;
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#000';
+                        ctx.textAlign = 'right';
+                        for (let i = minY; i <= maxY; i += yTickInterval) {
+                            const x = margin.left - 10;
+                            const y = canvas.height - margin.bottom - (i - minY) * yScale;
+
+                            ctx.beginPath();
+                            ctx.moveTo(margin.left, y);
+                            ctx.lineTo(margin.left - 10, y);
+                            ctx.strokeStyle = '#000';
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+
+                            ctx.save();
+                            ctx.translate(x, y);
+                            ctx.rotate(-Math.PI / 2);
+                            ctx.fillText(i, 0, 0);
+                            ctx.restore();
+                        }
+
+                        // Draw y axis label
+                        ctx.font = '16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.save();
+                        ctx.translate(35, canvas.height / 2);
+                        ctx.rotate(-Math.PI / 2);
+                        ctx.fillText('TMS amplitude (% MSO)', 0, 0);
+                        ctx.restore();
+
+                        // Draw lines connecting the points
+
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#000000';
+                        ctx.lineWidth = 2;
+                        for (let i = 1; i < xValues.length; i++) {
+                            const x1 = margin.left + (xValues[i - 1] - minX) * xScale;
+                            const y1 = canvas.height - margin.bottom - (yValues[i - 1] - minY) * yScale;
+                            const x2 = margin.left + (xValues[i] - minX) * xScale;
+                            const y2 = canvas.height - margin.bottom - (yValues[i] - minY) * yScale;
+
+                            ctx.moveTo(x1, y1);
+                            ctx.lineTo(x2, y2);
+                        }
+                        ctx.stroke();
+
+                        // Draw points on the graph
+                        for (let i = 0; i < xValues.length; i++) {
+                            const x = margin.left + (xValues[i] - minX) * xScale;
+                            const y = canvas.height - margin.bottom - (yValues[i] - minY) * yScale;
+                            const radius = 4.5;
+                            const color = colors[i];
+                            
+                            ctx.fillStyle = color;
+                            ctx.beginPath();
+                            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                            ctx.fill();
+                        }
+                    }
+                    drawChart([], []);
+
+
+                    // Function to update the chart with the current values from xValues and yValues
+                    function updateChart(x, y, color) {
+                        const xInput = x;
+                        const yInput = y;
+
+                        const xValue = parseFloat(xInput);
+                        const yValue = parseFloat(yInput);
+
+                        if (isNaN(xValue) || isNaN(yValue)) {
+                            alert('Please enter valid numeric values for X and Y.');
+                            return;
+                        }
+
+                        // Add new point to the xValues and yValues arrays
+                        xValues.push(xValue);
+                        yValues.push(yValue);
+                        colors.push(color)
+
+                        // Update the chart
+                        drawChart(xValues, yValues, colors);
+
+                        // Clear the input fields
+                        xInput.value = '';
+                        yInput.value = '';
                     }
 
+                    // Attach event listener to the "Add Point" button
+                    const addPointBtn1 = document.getElementById('MT_MEP');
+                    const addPointBtn2 = document.getElementById("MT_noMEP");
+                    const addPointBtn3 = document.getElementById("Reset_msg");
 
+                    addPointBtn1.addEventListener('click', function() {
+                        const xInput =  MT_estimator.index;
+                        const yInput = MT_estimator.pulses[MT_estimator.pulses.length-1];
+                        const circleColor = '#00ff00';
+    
+                        updateChart(xInput, yInput, circleColor);
+                    });
 
+                    addPointBtn2.addEventListener('click', function() {
+                        const xInput =  MT_estimator.index;
+                        const yInput = MT_estimator.pulses[MT_estimator.pulses.length-1];
+                        const circleColor = '#ff0000';
+    
+                        updateChart(xInput, yInput, circleColor);
+                    });
 
+                    addPointBtn3.addEventListener('click', function() {
+                        xValues = [];
+                        yValues = [];
+                        colors = [];
 
+                        drawChart(xValues, yValues, colors)
 
+                    });
 
-                // Call the drawChart function with the sample data
-                    drawChart(data);
-            </script>
-        </body>
+                </script>
+            </body>
+        </div>
+
+		<div class="w3-container">
+			<p>
+				A read-only list of information from the latest estimation.  (Graph updates dynamically with user input) <br>
+                
+				<button class="w3-green" onclick="downloadFile();" style="height:35px;width:100px"><u>D</u>ownload</button> or <button class="w3-green" onclick="copyToClipboard();" style="height:35px;width:60px"><u>C</u>opy</button> if needed.
+			</p>
+			<textarea id="MT_pulseList" rows="2" style="font-size:85%;" readonly=""></textarea>
+			<p></p>
+		</div>
+		
+		<!-- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+		<div class="w3-container w3-blue">
+			<h2>Information about this app</h2>
+		</div>
+		
+		<div class="w3-container w3-light-blue">
+			<h3>Method description</h3>
+		</div>
+		<div class="w3-container">
+			<p>The MT is estimated using a stochastic approximation method with a first-order digital control sequence (DCS). The step size of the control sequence follows harmonic convergence without adaptive stepping. The initial step size of the control sequence, <i>a</i><sub>0</sub>, is 6.7% MSO.</p>
+			<p>For the method to work correctly, it is important to start from an amplitude that is close to the likely MT (within ±25% MSO) and preferably <i>suprathreshold </i> (i.e., an amplitude that produces motor responses more often than not). The amplitude used to locate the motor hot spot is a good starting point. With a good initial amplitude, the estimator takes on average 25 pulses to determine the MT with median relative error |<i>δ</i>| of 1.3%, respectively.</p>
+			<p>All processing is done by the app locally. No data are shared online.</p>
+			
+			<p> Known limitations and bugs:</p>
+			<ul>
+				<li>The tool is provided as is. In particular, the description of the quality of the MT estimation is based on an approximate algorithm which may prematurely declare the estimation “good”. The final judgement on the MT must always be made by the operator!</li>
+				
+				<li>The stochastic approximation algorithm may attempt to step to impossible amplitudes for the MT estimate (below 0% or above 100% MSO). The implementation in this app limits both the MT estimate and the next amplitude on the lower end, whereas only the next amplitude is limited on the upper end, with the MT estimate possibly exceeding 100% MSO.</li>
+				
+				<li>The copy button does not work on some mobile devices. Please copy the text manually if the copy button fails.</li>
+				
+			</ul>
+			<p>If you have questions or feedback, please email Boshuo Wang at <a href="mailto:boshuo.wang@duke.edu">boshuo.wang@duke.edu</a>.</p>
+			<p>
+				<font size="1">
+					Description last updated: May 31, 2023.
+				</font>
+			</p>
+		</div>
+
+		<div class="w3-container w3-light-blue">
+			<h3>References</h3>
+		</div>
+		<div class="w3-container">	
+			<p>This HTML/JS application is written by Boshuo Wang and Lari M. Koponen.</p>
+			<p>The stochastic approximation MT methods are described in the following manuscript, which explores the performance of different control sequences, stepping adaptiveness, and initial step size.</p>
+			<ul>
+				<li>B. Wang, A. V. Peterchev, and S. M. Goetz, “Three Novel Methods for Determining Motor Threshold with Transcranial Magnetic Stimulation Outperform Conventional Procedures”, <i>bioRxiv</i>, Jun. 2022. DOI: <a href="https://doi.org/10.1101/2022.06.26.495134">10.1101/2022.06.26.495134</a>.</li>
+			</ul>
+			<p>The choice of initial stimulation amplitude close to the MT and the description of the quality of the current estimation follow suggestions in:</p>
+			<ul>
+				<li>L. M. Koponen and A. V. Peterchev, “Preventing misestimation of transcranial magnetic stimulation motor threshold with MTAT 2.0”, <i>Brain Stimulation: Basic, Translational, and Clinical Research in Neuromodulation</i>, vol. 15, no. 5, pp. 1073–1076, Sep. 2022. DOI: <a href="https://doi.org/10.1016/j.brs.2022.07.057">10.1016/j.brs.2022.07.057</a>.</li>
+			</ul>
+			<!--<p>Estimation of the MT's confidence interval will be implemented in future versions and described in a separate publication.</p>--->
+		</div>
+
+		<div class="w3-container w3-light-blue">
+			<h3>Copyright, licensing, and no warranty</h3>
+		</div>
+		<div class="w3-container">
+			<p>
+				The copyrights of this software are owned by Duke University and the University of Birmingham. As such, two licenses for this software are offered:
+			</p>
+			<ol>
+				<li>An open-source license under the <a href="https://opensource.org/license/gpl-2-0/">GPLv2 license</a> for non-commercial use.</li>
+				<li>A custom license with Duke University, for commercial use without the GPLv2 license restrictions. </li>
+			</ol>
+			<p>
+				As a recipient of this software, you may choose which license to receive the code under. Outside contributions to the Duke-owned code base cannot be accepted unless the contributor transfers the copyright to those changes over to Duke University.
+				To enter a custom license agreement without the GPLv2 license restrictions, please contact the Digital Innovations department at the Duke Office for Translation & Commercialization (OTC) (<a href="https://olv.duke.edu/software/">https://olv.duke.edu/software/</a>) at <a href="mailto:otcquestions@duke.edu">otcquestions@duke.edu</a> with reference to “OTC File No. 8063” in your email.
+			</p>
+			<p>
+				Please note that this software is distributed AS IS, WITHOUT ANY WARRANTY; and without the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			</p>
+		</div>
+
+	</body>
+</html>
