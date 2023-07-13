@@ -1069,7 +1069,7 @@
                         const chartHeight = canvas.height - margin.top - margin.bottom;
 
                         // Find minimum and maximum values
-                        const minX = 1;
+                        const minX = 0;
                         const maxX = 30;
                         const minY = 0;
                         const maxY = 100;
@@ -1092,7 +1092,7 @@
                         ctx.font = '14px Arial';
                         ctx.fillStyle = '#000';
                         ctx.textAlign = 'center';
-                        for (let i = minX; i <= maxX; i += xTickInterval) {
+                        for (let i = minX + 1; i < maxX; i += xTickInterval) { // Updated to iterate until maxX - 1
                             const x = margin.left + (i - minX) * xScale;
                             const y = canvas.height - margin.bottom + 20;
 
@@ -1103,13 +1103,13 @@
                             ctx.lineWidth = 2;
                             ctx.stroke();
 
-                            ctx.fillText(i, x, y);
+                            ctx.fillText(i, x, y+2);
                         }
-
+                        
                         // Draw x axis label
                         ctx.font = '16px Arial';
                         ctx.textAlign = 'center';
-                        ctx.fillText('TMS pulse number', canvas.width / 2, canvas.height - 15);
+                        ctx.fillText('TMS pulse number', canvas.width / 2, canvas.height - 30);
 
                         // Draw y axis tick marks and labels
                         const yTickInterval = 10;
@@ -1130,7 +1130,7 @@
                             ctx.save();
                             ctx.translate(x, y);
                             ctx.rotate(-Math.PI / 2);
-                            ctx.fillText(i, 0, 0);
+                            ctx.fillText(i, 6.7, -4);
                             ctx.restore();
                         }
 
@@ -1138,7 +1138,7 @@
                         ctx.font = '16px Arial';
                         ctx.textAlign = 'center';
                         ctx.save();
-                        ctx.translate(25, canvas.height / 2);
+                        ctx.translate(13, canvas.height / 2 - 20);
                         ctx.rotate(-Math.PI / 2);
                         ctx.fillText('TMS amplitude (% MSO)', 0, 0);
                         ctx.restore();
